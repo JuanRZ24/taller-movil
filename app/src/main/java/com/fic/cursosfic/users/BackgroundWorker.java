@@ -1,5 +1,7 @@
 package com.fic.cursosfic.users;
 
+import com.fic.cursosfic.BuildConfig;
+
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -19,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 
 public class BackgroundWorker extends AsyncTask<String, Void, BackgroundWorker.ApiResult> {
 
-    public static final String BASE_URL = "http://192.168.1.8:8000/api/v1/";
+    public static final String BASE_URL = BuildConfig.BASE_URL;
 
     private static final int TIMEOUT_MS = 15000;
     private static final String PREFS = "auth_prefs";
