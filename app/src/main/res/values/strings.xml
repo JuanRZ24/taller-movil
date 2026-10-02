@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">CursosFic</string>
+    <string name="btmlogin">Iniciar Sesión </string>
+    <string name="txtemail">Correo electrónico</string>
+    <string name="txtpassword">Contraseña</string>
+    <string name="txtpasswordconfirm">Confirmar contraseña</string>
+    <string name="btnregister">¿Aun no tienes cuenta?Registrate</string>
+    <string name="btmregister2">Registrarse</string>
+    <string name="txtname">Nombre(s)</string>
+    <string name="txtlastname">Apellidos</string>
+    <string name="footer_copyright">© 2024 CursosFic - Todos los derechos reservados</string>
 </resources>
