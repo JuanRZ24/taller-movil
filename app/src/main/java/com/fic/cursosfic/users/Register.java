@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +23,8 @@ public class Register extends AppCompatActivity {
         etEmail2 = findViewById(R.id.etEmail2);
         etPassword2 = findViewById(R.id.etPassword2);
         etPasswordConfirm = findViewById(R.id.etPasswordConfirm);
+        TextView tvIrLogin = findViewById(R.id.tvIrLogin);
+        tvIrLogin.setOnClickListener(v -> finish());
     }
 
     public void OnRegister(View view) {

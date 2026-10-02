@@ -4,4 +4,13 @@
     <color name="white">#FFFFFFFF</color>
     <color name="black_carmesi">#591228</color>
     <color name="drawer_item">#FFFFFF</color>
+
+    <!-- Paleta de la plataforma, igual que la web -->
+    <color name="brand_header">#205392</color>
+    <color name="brand_dark">#003564</color>
+    <color name="brand_accent">#2E9010</color>
+    <color name="card_bg">#EFEFEF</color>
+    <color name="input_border">#CCCCCC</color>
+    <color name="label_text">#222222</color>
+    <color name="error_red">#D32F2F</color>
 </resources>
