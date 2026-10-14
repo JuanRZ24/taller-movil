@@ -9,4 +9,6 @@
     <string name="txtname">Nombre(s)</string>
     <string name="txtlastname">Apellidos</string>
     <string name="footer_copyright">© 2024 CursosFic - Todos los derechos reservados</string>
+    <string name="navigation_drawer_open">Abrir menú</string>
+    <string name="navigation_drawer_close">Cerrar menú</string>
 </resources>

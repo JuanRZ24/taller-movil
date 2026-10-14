@@ -28,6 +28,12 @@
             android:name=".users.Register"
             android:exported="false" />
         <activity
+            android:name=".users.Profile"
+            android:exported="false" />
+        <activity
+            android:name=".courses.CreateCourse"
+            android:exported="false" />
+        <activity
             android:name=".menu.menu"
             android:exported="false" />
     </application>
