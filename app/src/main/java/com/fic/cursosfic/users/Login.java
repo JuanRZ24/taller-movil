@@ -19,6 +19,7 @@ import org.json.JSONObject;
 public class Login extends AppCompatActivity {
     private EditText etEmail, etPassword;
 
+    // Inicializa la pantalla de inicio de sesion y configura el boton para ir a registrarse
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +36,7 @@ public class Login extends AppCompatActivity {
         checkIntentForEmail(getIntent());
     }
 
+    // Captura el intent si la pantalla ya estaba abierta para recibir el correo enviado
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -42,6 +44,7 @@ public class Login extends AppCompatActivity {
         checkIntentForEmail(intent);
     }
 
+    // Revisa si viene un correo desde el registro para autocompletar el campo automaticamente
     private void checkIntentForEmail(Intent intent) {
         if (intent != null && intent.hasExtra("email")) {
             String email = intent.getStringExtra("email");
@@ -52,30 +55,33 @@ public class Login extends AppCompatActivity {
         }
     }
 
+    // Evento al presionar el boton de iniciar sesion para validar campos y mandar la peticion
     public void OnLogin(View view) {
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
-        // 1. Validar campos requeridos
+        // Validar que el correo no este vacio
         if (email.isEmpty()) {
             etEmail.setError("El correo electrónico es requerido");
             etEmail.requestFocus();
             return;
         }
 
+        // Validar que la contraseña no este vacia
         if (password.isEmpty()) {
             etPassword.setError("La contraseña es requerida");
             etPassword.requestFocus();
             return;
         }
 
-        // 2. Validar formato de email
+        // Validar formato correcto del correo
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             etEmail.setError("El formato del correo electrónico no es válido");
             etEmail.requestFocus();
             return;
         }
 
+        // Manda las credenciales al servidor y maneja la respuesta
         BackgroundWorker backgroundWorker = new BackgroundWorker(this, (isSuccess, action, loggedEmail, result) -> {
             if (isSuccess) {
                 Toast.makeText(Login.this, "¡Inicio de sesión exitoso!", Toast.LENGTH_SHORT).show();
@@ -84,15 +90,16 @@ public class Login extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             } else {
-                handleLoginErrors(result.body);
+                handleLoginErrors(result.body, result.code);
             }
         });
         backgroundWorker.execute("login", email, password);
     }
 
-    private void handleLoginErrors(String body) {
-        if (body == null || body.isEmpty()) {
-            Toast.makeText(this, "Error de conexión con el servidor", Toast.LENGTH_LONG).show();
+    // Maneja los errores de inicio de sesion devueltos por la API o falta de conexion
+    private void handleLoginErrors(String body, int code) {
+        if (code == -1 || body == null || body.isEmpty()) {
+            Toast.makeText(this, "Servicio no disponible", Toast.LENGTH_LONG).show();
             return;
         }
         try {
@@ -114,10 +121,11 @@ public class Login extends AppCompatActivity {
             etPassword.setError(msg);
             etPassword.requestFocus();
         } catch (Exception e) {
-            Toast.makeText(this, BackgroundWorker.humanMessage(body), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Servicio no disponible", Toast.LENGTH_LONG).show();
         }
     }
 
+    // Helper para obtener la primera cadena de error del arreglo devuelto por la API
     private String getFirstErrorMessage(JSONObject errorsObj, String key) {
         Object val = errorsObj.opt(key);
         if (val instanceof JSONArray) {

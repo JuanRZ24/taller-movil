@@ -20,6 +20,7 @@ public class Register extends AppCompatActivity {
 
     private EditText etName, etEmail2, etPassword2, etPasswordConfirm;
 
+    // Inicializa los campos de registro y configura la opcion de regresar a la pantalla de login
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +33,7 @@ public class Register extends AppCompatActivity {
         tvIrLogin.setOnClickListener(v -> finish());
     }
 
+    // Accion al presionar el boton registrar para validar todos los datos ingresados
     public void OnRegister(View view) {
         String name = etName.getText().toString().trim();
         String email = etEmail2.getText().toString().trim();
@@ -39,20 +41,20 @@ public class Register extends AppCompatActivity {
         String passwordConfirm = etPasswordConfirm.getText().toString().trim();
         String type = "register";
 
-        // 1. Validaciones de campos requeridos
+        // Revisa que ningun campo este vacio
         if (name.isEmpty() || email.isEmpty() || password.isEmpty() || passwordConfirm.isEmpty()) {
             Toast.makeText(this, "Completa todos los campos requeridos", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // 2. Validación de nombre
+        // Revisa que el nombre no sea demasiado largo
         if (name.length() > 255) {
             etName.setError("El nombre es demasiado largo");
             etName.requestFocus();
             return;
         }
 
-        // 3. Validación de email
+        // Valida que el formato del correo sea correcto
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             etEmail2.setError("El formato del correo electrónico no es válido");
             etEmail2.requestFocus();
@@ -64,20 +66,21 @@ public class Register extends AppCompatActivity {
             return;
         }
 
-        // 4. Validación de contraseña (mínimo 8 caracteres)
+        // Revisa que la contraseña tenga minimo 8 caracteres
         if (password.length() < 8) {
             etPassword2.setError("La contraseña debe tener al menos 8 caracteres");
             etPassword2.requestFocus();
             return;
         }
 
-        // 5. Validación de confirmación de contraseña (debe coincidir con la contraseña)
+        // Compara que la contraseña y su confirmación sean exactamente iguales
         if (!password.equals(passwordConfirm)) {
             etPasswordConfirm.setError("Las contraseñas no coinciden");
             etPasswordConfirm.requestFocus();
             return;
         }
 
+        // Manda los datos del nuevo usuario al servidor y procesa el resultado
         BackgroundWorker backgroundWorker = new BackgroundWorker(this, (isSuccess, action, registeredEmail, result) -> {
             if (isSuccess) {
                 Toast.makeText(Register.this, "¡Registro exitoso!", Toast.LENGTH_SHORT).show();
@@ -87,15 +90,16 @@ public class Register extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             } else {
-                handleRegisterErrors(result.body);
+                handleRegisterErrors(result.body, result.code);
             }
         });
         backgroundWorker.execute(type, name, email, password, passwordConfirm);
     }
 
-    private void handleRegisterErrors(String body) {
-        if (body == null || body.isEmpty()) {
-            Toast.makeText(this, "Error de conexión con el servidor", Toast.LENGTH_LONG).show();
+    // Procesa los errores del servidor asignandolos a cada caja de texto o mostrando el dialogo si el correo ya existe
+    private void handleRegisterErrors(String body, int code) {
+        if (code == -1 || body == null || body.isEmpty()) {
+            Toast.makeText(this, "Servicio no disponible", Toast.LENGTH_LONG).show();
             return;
         }
         try {
@@ -126,6 +130,7 @@ public class Register extends AppCompatActivity {
                 }
             }
 
+            // Si el correo ya existe le pregunta al usuario si prefiere iniciar sesion
             if (isEmailTaken) {
                 String currentEmail = etEmail2.getText().toString().trim();
                 new AlertDialog.Builder(this)
@@ -141,14 +146,15 @@ public class Register extends AppCompatActivity {
                         .setNegativeButton("Cancelar", (dialog, which) -> dialog.dismiss())
                         .show();
             } else if (!fieldErrorSet) {
-                String msg = json.optString("message", "Error al registrar el usuario");
+                String msg = json.optString("message", "Servicio no disponible");
                 Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
-            Toast.makeText(this, BackgroundWorker.humanMessage(body), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Servicio no disponible", Toast.LENGTH_LONG).show();
         }
     }
 
+    // Helper para sacar el primer mensaje de error de las respuestas en JSON de la API
     private String getFirstErrorMessage(JSONObject errorsObj, String key) {
         Object val = errorsObj.opt(key);
         if (val instanceof JSONArray) {

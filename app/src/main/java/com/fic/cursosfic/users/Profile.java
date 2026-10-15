@@ -32,6 +32,7 @@ public class Profile extends AppCompatActivity {
     private TextView tvProfileName, tvProfileEmail, tvProfileRole, tvPhotoHint;
     private Button btnBecomeInstructor;
 
+    // Lanzador para abrir la galeria del dispositivo y seleccionar una foto de perfil
     private final ActivityResultLauncher<String> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
             uri -> {
@@ -48,6 +49,7 @@ public class Profile extends AppCompatActivity {
             }
     );
 
+    // Inicializa la pantalla de perfil y vincula los elementos de la vista
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +76,7 @@ public class Profile extends AppCompatActivity {
         loadUserData();
     }
 
+    // Carga nombre, correo, rol e imagen desde SharedPreferences y configura permisos segun el rol
     private void loadUserData() {
         SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
         String name = prefs.getString(BackgroundWorker.KEY_NAME, "No especificado");
@@ -118,6 +121,7 @@ public class Profile extends AppCompatActivity {
         }
     }
 
+    // Carga la foto de perfil ya sea desde una URL remota de internet o desde la galeria local
     private void loadProfileImage(String uriString) {
         if (uriString != null && !uriString.isEmpty()) {
             if (uriString.startsWith("http://") || uriString.startsWith("https://")) {
@@ -153,6 +157,7 @@ public class Profile extends AppCompatActivity {
         }
     }
 
+    // Asigna el icono de usuario por defecto con el tinte de color de la app
     private void setDefaultProfileImage() {
         ivProfilePicture.setImageResource(android.R.drawable.ic_menu_myplaces);
         ivProfilePicture.setImageTintList(android.content.res.ColorStateList.valueOf(
@@ -160,6 +165,7 @@ public class Profile extends AppCompatActivity {
         ));
     }
 
+    // Despliega el formulario para ingresar titular, especialidad y biografia al volverse instructor
     private void showBecomeInstructorDialog() {
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -187,7 +193,7 @@ public class Profile extends AppCompatActivity {
                     String bio = etBio.getText().toString().trim();
 
                     if (headline.isEmpty() || specialty.isEmpty() || bio.isEmpty()) {
-                        Toast.makeText(this, "Todos los campos (Titular, Especialidad y Biografía) son requeridos", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "Todos los campos son requeridos", Toast.LENGTH_LONG).show();
                         return;
                     }
                     sendRoleChangeToApi(headline, specialty, bio);
@@ -196,6 +202,7 @@ public class Profile extends AppCompatActivity {
                 .show();
     }
 
+    // Manda la peticion al servidor POST /instructors para guardar los datos de instructor
     private void sendRoleChangeToApi(String headline, String specialty, String bio) {
         Toast.makeText(this, "Enviando datos al servidor...", Toast.LENGTH_SHORT).show();
         Executors.newSingleThreadExecutor().execute(() -> {
@@ -208,17 +215,14 @@ public class Profile extends AppCompatActivity {
                     Toast.makeText(Profile.this, "¡Felicidades! Ahora eres Instructor", Toast.LENGTH_LONG).show();
                     loadUserData();
                 } else {
-                    String detailMsg = "Código HTTP " + result.code + "\n" + BackgroundWorker.humanMessage(result.body);
-                    new AlertDialog.Builder(Profile.this)
-                            .setTitle("Error del servidor")
-                            .setMessage(detailMsg)
-                            .setPositiveButton("Entendido", (d, w) -> d.dismiss())
-                            .show();
+                    String msg = (result.code == -1) ? "Servicio no disponible" : BackgroundWorker.humanMessage(result.body);
+                    Toast.makeText(Profile.this, msg, Toast.LENGTH_LONG).show();
                 }
             });
         });
     }
 
+    // Sube la foto seleccionada al servidor mediante POST multipart
     private void uploadPhotoToApi(Uri imageUri) {
         Toast.makeText(this, "Subiendo foto de perfil al servidor...", Toast.LENGTH_SHORT).show();
         Executors.newSingleThreadExecutor().execute(() -> {
@@ -242,12 +246,8 @@ public class Profile extends AppCompatActivity {
                     loadProfileImage(imageUri.toString());
                     Toast.makeText(Profile.this, "¡Foto de perfil actualizada en el servidor!", Toast.LENGTH_SHORT).show();
                 } else {
-                    String detailMsg = "Código HTTP " + result.code + "\n" + BackgroundWorker.humanMessage(result.body);
-                    new AlertDialog.Builder(Profile.this)
-                            .setTitle("Error al subir foto")
-                            .setMessage(detailMsg)
-                            .setPositiveButton("Entendido", (d, w) -> d.dismiss())
-                            .show();
+                    String msg = (result.code == -1) ? "Servicio no disponible" : BackgroundWorker.humanMessage(result.body);
+                    Toast.makeText(Profile.this, msg, Toast.LENGTH_LONG).show();
                 }
             });
         });

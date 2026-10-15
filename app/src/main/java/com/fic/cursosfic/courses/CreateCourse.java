@@ -38,6 +38,7 @@ public class CreateCourse extends AppCompatActivity {
     };
     private final String[] levelValues = {"beginner", "intermediate", "advanced"};
 
+    // Inicializa la pantalla de crear curso y configura la barra superior
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +66,7 @@ public class CreateCourse extends AppCompatActivity {
         btnPublishCourse.setOnClickListener(v -> publishCourse());
     }
 
+    // Configura el menu desplegable para elegir el nivel de dificultad del curso
     private void setupLevelSpinner() {
         ArrayAdapter<String> levelAdapter = new ArrayAdapter<>(
                 this, android.R.layout.simple_spinner_item, levelDisplay
@@ -73,6 +75,7 @@ public class CreateCourse extends AppCompatActivity {
         spinnerLevel.setAdapter(levelAdapter);
     }
 
+    // Consulta la API mediante GET /categories para llenar el menu desplegable con categorias reales
     private void loadCategoriesFromApi() {
         categoryDisplayList.clear();
         categoryIdList.clear();
@@ -88,7 +91,7 @@ public class CreateCourse extends AppCompatActivity {
                             array = new JSONArray(bodyTrimmed);
                         } else {
                             JSONObject json = new JSONObject(bodyTrimmed);
-                            array = json.optJSONArray("data");
+                            array = json.optJSONArray("categories");
                         }
 
                         if (array != null && array.length() > 0) {
@@ -119,6 +122,7 @@ public class CreateCourse extends AppCompatActivity {
         });
     }
 
+    // Valida el formulario y manda la peticion POST /courses al servidor para publicar el curso
     private void publishCourse() {
         String title = etCourseTitle.getText().toString().trim();
         String description = etCourseDescription.getText().toString().trim();

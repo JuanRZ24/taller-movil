@@ -30,6 +30,7 @@ public class menu extends AppCompatActivity implements NavigationView.OnNavigati
     private NavigationView navigationView;
     private Toolbar toolbar;
 
+    // Inicializa la vista principal del menu
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +41,7 @@ public class menu extends AppCompatActivity implements NavigationView.OnNavigati
         setupBackPress();
     }
 
+    // Refresca el menu y sus permisos cada vez que la pantalla vuelve a estar visible
     @Override
     protected void onResume() {
         super.onResume();
@@ -47,20 +49,21 @@ public class menu extends AppCompatActivity implements NavigationView.OnNavigati
         updateMenuPermissions();
     }
 
-    // Vinculamos los elementos de la vista
+    // Vincula las vistas XML con las variables Java
     private void vincular() {
         drawerLayout = findViewById(R.id.main);
         navigationView = findViewById(R.id.nav_view);
         toolbar = findViewById(R.id.toolbar);
     }
 
+    // Asigna la barra de herramientas superior
     protected void setToolbar() {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
     }
 
-    // Configuración del menú lateral y el botón de hamburguesa
+    // Configura el menu lateral y activa el boton de hamburguesa en la barra superior
     protected void action() {
         navigationView.bringToFront();
         if (toolbar != null && drawerLayout != null) {
@@ -77,7 +80,7 @@ public class menu extends AppCompatActivity implements NavigationView.OnNavigati
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    // Activa o desactiva la opción de "Crear Curso" según el rol del usuario
+    // Oculta o muestra la opcion de Crear Curso segun si el usuario es Instructor o Estudiante
     private void updateMenuPermissions() {
         if (navigationView != null) {
             SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
@@ -92,7 +95,7 @@ public class menu extends AppCompatActivity implements NavigationView.OnNavigati
         }
     }
 
-    // Evita cerrar la app de golpe si el menú lateral está desplegado
+    // Evita cerrar la app si se presiona el boton atras teniendo el menu lateral abierto
     private void setupBackPress() {
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -107,13 +110,13 @@ public class menu extends AppCompatActivity implements NavigationView.OnNavigati
         });
     }
 
-    // Manejo de opciones seleccionadas en el menú lateral
+    // Escucha los clics del menu lateral para abrir Inicio, Perfil, Crear Curso o Cerrar Sesion
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         int id = menuItem.getItemId();
 
         if (id == R.id.nav_logout) {
-            // 1. Eliminar el token guardado en SharedPreferences
+            // Elimina el token guardado en SharedPreferences y regresa a la pantalla de login
             getSharedPreferences(PREFS, MODE_PRIVATE)
                     .edit()
                     .clear()
@@ -121,7 +124,6 @@ public class menu extends AppCompatActivity implements NavigationView.OnNavigati
 
             Toast.makeText(this, "Sesión cerrada correctamente", Toast.LENGTH_SHORT).show();
 
-            // 2. Redirigir a la Activity Login limpiando el historial
             Intent intent = new Intent(menu.this, Login.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);

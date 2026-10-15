@@ -30,6 +30,7 @@ public class BackgroundWorker extends AsyncTask<String, Void, BackgroundWorker.A
     public static final String KEY_EMAIL = "user_email";
     public static final String KEY_ROLE = "user_role";
 
+    // Interfaz para avisarle a la pantalla que la tarea ya termino
     public interface OnTaskCompleted {
         void onCompleted(boolean isSuccess, String action, String email, ApiResult result);
     }
@@ -39,15 +40,18 @@ public class BackgroundWorker extends AsyncTask<String, Void, BackgroundWorker.A
     private String actionExecuted;
     private String emailExecuted;
 
+    // Constructor basico si no necesitamos avisarle a nadie al terminar
     public BackgroundWorker(Context ctx) {
         this(ctx, null);
     }
 
+    // Constructor principal para mandar el contexto y la respuesta
     public BackgroundWorker(Context ctx, OnTaskCompleted listener) {
         this.context = ctx;
         this.listener = listener;
     }
 
+    // Clase auxiliar para guardar el codigo HTTP y el cuerpo de la respuesta
     public static class ApiResult {
         public final int code;
         public final String body;
@@ -57,11 +61,13 @@ public class BackgroundWorker extends AsyncTask<String, Void, BackgroundWorker.A
             this.body = body;
         }
 
+        // Revisa si la peticion fue exitosa (codigo 200 a 299)
         public boolean isSuccess() {
             return code >= 200 && code < 300;
         }
     }
 
+    // Hace la peticion HTTP POST en segundo plano para login o registro
     @Override
     protected ApiResult doInBackground(String... params) {
         HttpURLConnection conn = null;
@@ -111,7 +117,7 @@ public class BackgroundWorker extends AsyncTask<String, Void, BackgroundWorker.A
             InputStream in = (code >= 200 && code < 300) ? conn.getInputStream() : conn.getErrorStream();
 
             if (in == null) {
-                return new ApiResult(code, "{\"message\":\"El servidor no devolvio cuerpo (codigo " + code + ").\"}");
+                return new ApiResult(code, "{\"message\":\"Servicio no disponible\"}");
             }
 
             StringBuilder sb = new StringBuilder();
@@ -121,15 +127,14 @@ public class BackgroundWorker extends AsyncTask<String, Void, BackgroundWorker.A
             }
             return new ApiResult(code, sb.toString());
 
-        } catch (java.net.SocketTimeoutException e) {
-            return new ApiResult(-1, "{\"message\":\"El servidor tardo demasiado en responder.\"}");
         } catch (Exception e) {
-            return new ApiResult(-1, "{\"message\":\"No se pudo conectar con el servidor. Verifica la IP/puerto. Detalle: " + escape(e.toString()) + "\"}");
+            return new ApiResult(-1, "{\"message\":\"Servicio no disponible\"}");
         } finally {
             if (conn != null) conn.disconnect();
         }
     }
 
+    // Se ejecuta al terminar la peticion para guardar token y datos del usuario
     @Override
     protected void onPostExecute(ApiResult result) {
         if (result.isSuccess()) {
@@ -177,6 +182,7 @@ public class BackgroundWorker extends AsyncTask<String, Void, BackgroundWorker.A
         }
     }
 
+    // Peticion GET para traer las categorias reales de la API
     public static ApiResult getCategories(Context context) {
         HttpURLConnection conn = null;
         try {
@@ -204,12 +210,13 @@ public class BackgroundWorker extends AsyncTask<String, Void, BackgroundWorker.A
             }
             return new ApiResult(code, sb.toString());
         } catch (Exception e) {
-            return new ApiResult(-1, "{\"message\":\"Error al obtener categorias: " + escape(e.toString()) + "\"}");
+            return new ApiResult(-1, "{\"message\":\"Servicio no disponible\"}");
         } finally {
             if (conn != null) conn.disconnect();
         }
     }
 
+    // Peticion POST para crear y publicar un curso nuevo
     public static ApiResult createCourse(Context context, String title, String description, int categoryId, String level) {
         HttpURLConnection conn = null;
         try {
@@ -250,12 +257,13 @@ public class BackgroundWorker extends AsyncTask<String, Void, BackgroundWorker.A
             }
             return new ApiResult(code, sb.toString());
         } catch (Exception e) {
-            return new ApiResult(-1, "{\"message\":\"Error de conexion: " + escape(e.toString()) + "\"}");
+            return new ApiResult(-1, "{\"message\":\"Servicio no disponible\"}");
         } finally {
             if (conn != null) conn.disconnect();
         }
     }
 
+    // Peticion POST para cambiar el rol del usuario a instructor
     public static ApiResult changeRoleToInstructor(Context context, String headline, String specialty, String biography) {
         HttpURLConnection conn = null;
         try {
@@ -295,12 +303,13 @@ public class BackgroundWorker extends AsyncTask<String, Void, BackgroundWorker.A
             }
             return new ApiResult(code, sb.toString());
         } catch (Exception e) {
-            return new ApiResult(-1, "{\"message\":\"Error de conexion: " + escape(e.toString()) + "\"}");
+            return new ApiResult(-1, "{\"message\":\"Servicio no disponible\"}");
         } finally {
             if (conn != null) conn.disconnect();
         }
     }
 
+    // Peticion POST multipart para subir la foto de perfil del instructor
     public static ApiResult uploadPhoto(Context context, Uri imageUri) {
         HttpURLConnection conn = null;
         try {
@@ -357,14 +366,15 @@ public class BackgroundWorker extends AsyncTask<String, Void, BackgroundWorker.A
             }
             return new ApiResult(code, sb.toString());
         } catch (Exception e) {
-            return new ApiResult(-1, "{\"message\":\"Error al subir la imagen: " + escape(e.toString()) + "\"}");
+            return new ApiResult(-1, "{\"message\":\"Servicio no disponible\"}");
         } finally {
             if (conn != null) conn.disconnect();
         }
     }
 
+    // Extrae un mensaje entendible del JSON devuelto por el servidor
     public static String humanMessage(String body) {
-        if (body == null || body.isEmpty()) return "Respuesta vacia del servidor.";
+        if (body == null || body.isEmpty()) return "Servicio no disponible.";
         try {
             JSONObject json = new JSONObject(body);
             JSONObject errors = json.optJSONObject("errors");
@@ -377,13 +387,9 @@ public class BackgroundWorker extends AsyncTask<String, Void, BackgroundWorker.A
                 return sb.toString().trim();
             }
             String msg = json.optString("message");
-            return msg.isEmpty() ? body : msg;
+            return msg.isEmpty() ? "Servicio no disponible" : msg;
         } catch (Exception ex) {
-            return body;
+            return "Servicio no disponible";
         }
-    }
-
-    private static String escape(String s) {
-        return s == null ? "desconocido" : s.replace('"', '\'');
     }
 }
