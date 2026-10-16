@@ -1,5 +1,6 @@
 package com.fic.cursosfic.courses;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -32,9 +33,9 @@ public class CreateCourse extends AppCompatActivity {
 
     // Niveles soportados por la API
     private final String[] levelDisplay = {
-            "Principiante (beginner)",
-            "Intermedio (intermediate)",
-            "Avanzado (advanced)"
+            "Principiante",
+            "Intermedio",
+            "Avanzado"
     };
     private final String[] levelValues = {"beginner", "intermediate", "advanced"};
 
@@ -161,7 +162,10 @@ public class CreateCourse extends AppCompatActivity {
             runOnUiThread(() -> {
                 btnPublishCourse.setEnabled(true);
                 if (result.isSuccess()) {
-                    Toast.makeText(CreateCourse.this, "¡Curso publicado con éxito!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(CreateCourse.this, "¡Curso creado con éxito!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(CreateCourse.this, CourseDetail.class);
+                    intent.putExtra("course_json", result.body);
+                    startActivity(intent);
                     finish();
                 } else {
                     String detailMsg = "Código HTTP " + result.code + "\n" + BackgroundWorker.humanMessage(result.body);

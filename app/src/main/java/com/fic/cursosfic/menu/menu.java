@@ -17,6 +17,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.fic.cursosfic.R;
 import com.fic.cursosfic.courses.CreateCourse;
+import com.fic.cursosfic.courses.MyCourses;
 import com.fic.cursosfic.users.BackgroundWorker;
 import com.fic.cursosfic.users.Login;
 import com.fic.cursosfic.users.Profile;
@@ -80,7 +81,7 @@ public class menu extends AppCompatActivity implements NavigationView.OnNavigati
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    // Oculta o muestra la opcion de Crear Curso segun si el usuario es Instructor o Estudiante
+    // Oculta o muestra las opciones de Instructor ("Mis Cursos" y "Crear Curso") segun el rol del usuario
     private void updateMenuPermissions() {
         if (navigationView != null) {
             SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
@@ -91,6 +92,11 @@ public class menu extends AppCompatActivity implements NavigationView.OnNavigati
             MenuItem crearCursoItem = navMenu.findItem(R.id.nav_crear_curso);
             if (crearCursoItem != null) {
                 crearCursoItem.setVisible(isInstructor);
+            }
+
+            MenuItem misCursosItem = navMenu.findItem(R.id.nav_mis_cursos);
+            if (misCursosItem != null) {
+                misCursosItem.setVisible(isInstructor);
             }
         }
     }
@@ -110,7 +116,7 @@ public class menu extends AppCompatActivity implements NavigationView.OnNavigati
         });
     }
 
-    // Escucha los clics del menu lateral para abrir Inicio, Perfil, Crear Curso o Cerrar Sesion
+    // Escucha los clics del menu lateral para abrir Inicio, Perfil, Mis Cursos, Crear Curso o Cerrar Sesion
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         int id = menuItem.getItemId();
@@ -131,6 +137,10 @@ public class menu extends AppCompatActivity implements NavigationView.OnNavigati
 
         } else if (id == R.id.nav_perfil) {
             Intent intent = new Intent(menu.this, Profile.class);
+            startActivity(intent);
+
+        } else if (id == R.id.nav_mis_cursos) {
+            Intent intent = new Intent(menu.this, MyCourses.class);
             startActivity(intent);
 
         } else if (id == R.id.nav_crear_curso) {

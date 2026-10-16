@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F8F9FA"
+    tools:context=".courses.CourseDetail">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarCourseDetail"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/brand_header"
+        app:title="Gestión del Curso"
+        app:titleTextColor="@color/white" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Header: Datos del curso -->
+            <TextView
+                android:id="@+id/courseTitleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/courseMetaTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#666666"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:id="@+id/courseDescriptionTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:textColor="#333333"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Barra de acciones -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp">
+
+                <Button
+                    android:id="@+id/addModuleButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="Añadir módulo"
+                    android:textColor="@color/white"
+                    android:backgroundTint="@color/brand_header" />
+
+                <Button
+                    android:id="@+id/publishCourseButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="Publicar curso"
+                    android:textColor="@color/white"
+                    android:backgroundTint="@color/brand_accent" />
+
+            </LinearLayout>
+
+            <!-- Lista de módulos -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Módulos del Curso"
+                android:textSize="18sp"
+                android:textColor="@color/brand_dark"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Estado vacío de módulos -->
+            <TextView
+                android:id="@+id/emptyModulesTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
+                android:text="Aún no hay módulos. Toca 'Añadir módulo' para empezar."
+                android:textSize="14sp"
+                android:textColor="#999999"
+                android:gravity="center"
+                android:visibility="visible" />
+
+            <LinearLayout
+                android:id="@+id/modulesContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="24dp" />
+
+        </LinearLayout>
+
+    </ScrollView>
+</LinearLayout>

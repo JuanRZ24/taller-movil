@@ -216,6 +216,40 @@ public class BackgroundWorker extends AsyncTask<String, Void, BackgroundWorker.A
         }
     }
 
+    // Peticion GET /courses/me para obtener los cursos creados por el instructor (borradores, en revision, etc.)
+    public static ApiResult getInstructorCourses(Context context) {
+        HttpURLConnection conn = null;
+        try {
+            String token = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_TOKEN, "");
+            URL url = new URL(BASE_URL + "courses/me");
+
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(TIMEOUT_MS);
+            conn.setReadTimeout(TIMEOUT_MS);
+            conn.setRequestProperty("Accept", "application/json");
+            if (token != null && !token.isEmpty()) {
+                conn.setRequestProperty("Authorization", "Bearer " + token);
+            }
+
+            int code = conn.getResponseCode();
+            InputStream in = (code >= 200 && code < 300) ? conn.getInputStream() : conn.getErrorStream();
+
+            StringBuilder sb = new StringBuilder();
+            if (in != null) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = br.readLine()) != null) sb.append(line);
+                }
+            }
+            return new ApiResult(code, sb.toString());
+        } catch (Exception e) {
+            return new ApiResult(-1, "{\"message\":\"Servicio no disponible\"}");
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+    }
+
     // Peticion POST para crear y publicar un curso nuevo
     public static ApiResult createCourse(Context context, String title, String description, int categoryId, String level) {
         HttpURLConnection conn = null;
@@ -243,6 +277,309 @@ public class BackgroundWorker extends AsyncTask<String, Void, BackgroundWorker.A
 
             try (OutputStream os = conn.getOutputStream()) {
                 os.write(payload.toString().getBytes(StandardCharsets.UTF_8));
+            }
+
+            int code = conn.getResponseCode();
+            InputStream in = (code >= 200 && code < 300) ? conn.getInputStream() : conn.getErrorStream();
+
+            StringBuilder sb = new StringBuilder();
+            if (in != null) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = br.readLine()) != null) sb.append(line);
+                }
+            }
+            return new ApiResult(code, sb.toString());
+        } catch (Exception e) {
+            return new ApiResult(-1, "{\"message\":\"Servicio no disponible\"}");
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+    }
+
+    // Peticion PATCH /courses/{course} para enviar el curso a revision/publicar
+    public static ApiResult publishCourse(Context context, int courseId) {
+        HttpURLConnection conn = null;
+        try {
+            String token = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_TOKEN, "");
+            URL url = new URL(BASE_URL + "courses/" + courseId);
+
+            JSONObject payload = new JSONObject();
+            payload.put("status", "pending");
+
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("X-HTTP-Method-Override", "PATCH");
+            conn.setConnectTimeout(TIMEOUT_MS);
+            conn.setReadTimeout(TIMEOUT_MS);
+            conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+            conn.setRequestProperty("Accept", "application/json");
+            if (token != null && !token.isEmpty()) {
+                conn.setRequestProperty("Authorization", "Bearer " + token);
+            }
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(payload.toString().getBytes(StandardCharsets.UTF_8));
+            }
+
+            int code = conn.getResponseCode();
+            InputStream in = (code >= 200 && code < 300) ? conn.getInputStream() : conn.getErrorStream();
+
+            StringBuilder sb = new StringBuilder();
+            if (in != null) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = br.readLine()) != null) sb.append(line);
+                }
+            }
+            return new ApiResult(code, sb.toString());
+        } catch (Exception e) {
+            return new ApiResult(-1, "{\"message\":\"Servicio no disponible\"}");
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+    }
+
+    // Peticion POST /courses/{course}/modules para crear un nuevo modulo dentro de un curso
+    public static ApiResult createModule(Context context, int courseId, String title) {
+        HttpURLConnection conn = null;
+        try {
+            String token = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_TOKEN, "");
+            URL url = new URL(BASE_URL + "courses/" + courseId + "/modules");
+
+            JSONObject payload = new JSONObject();
+            payload.put("title", title);
+
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setConnectTimeout(TIMEOUT_MS);
+            conn.setReadTimeout(TIMEOUT_MS);
+            conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+            conn.setRequestProperty("Accept", "application/json");
+            if (token != null && !token.isEmpty()) {
+                conn.setRequestProperty("Authorization", "Bearer " + token);
+            }
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(payload.toString().getBytes(StandardCharsets.UTF_8));
+            }
+
+            int code = conn.getResponseCode();
+            InputStream in = (code >= 200 && code < 300) ? conn.getInputStream() : conn.getErrorStream();
+
+            StringBuilder sb = new StringBuilder();
+            if (in != null) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = br.readLine()) != null) sb.append(line);
+                }
+            }
+            return new ApiResult(code, sb.toString());
+        } catch (Exception e) {
+            return new ApiResult(-1, "{\"message\":\"Servicio no disponible\"}");
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+    }
+
+    // Peticion PATCH /modules/{module} para editar un modulo existente
+    public static ApiResult editModule(Context context, int moduleId, String newTitle) {
+        HttpURLConnection conn = null;
+        try {
+            String token = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_TOKEN, "");
+            URL url = new URL(BASE_URL + "modules/" + moduleId);
+
+            JSONObject payload = new JSONObject();
+            payload.put("title", newTitle);
+
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("X-HTTP-Method-Override", "PATCH");
+            conn.setConnectTimeout(TIMEOUT_MS);
+            conn.setReadTimeout(TIMEOUT_MS);
+            conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+            conn.setRequestProperty("Accept", "application/json");
+            if (token != null && !token.isEmpty()) {
+                conn.setRequestProperty("Authorization", "Bearer " + token);
+            }
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(payload.toString().getBytes(StandardCharsets.UTF_8));
+            }
+
+            int code = conn.getResponseCode();
+            InputStream in = (code >= 200 && code < 300) ? conn.getInputStream() : conn.getErrorStream();
+
+            StringBuilder sb = new StringBuilder();
+            if (in != null) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = br.readLine()) != null) sb.append(line);
+                }
+            }
+            return new ApiResult(code, sb.toString());
+        } catch (Exception e) {
+            return new ApiResult(-1, "{\"message\":\"Servicio no disponible\"}");
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+    }
+
+    // Peticion DELETE /modules/{module} para eliminar un modulo
+    public static ApiResult deleteModule(Context context, int moduleId) {
+        HttpURLConnection conn = null;
+        try {
+            String token = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_TOKEN, "");
+            URL url = new URL(BASE_URL + "modules/" + moduleId);
+
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("DELETE");
+            conn.setConnectTimeout(TIMEOUT_MS);
+            conn.setReadTimeout(TIMEOUT_MS);
+            conn.setRequestProperty("Accept", "application/json");
+            if (token != null && !token.isEmpty()) {
+                conn.setRequestProperty("Authorization", "Bearer " + token);
+            }
+
+            int code = conn.getResponseCode();
+            InputStream in = (code >= 200 && code < 300) ? conn.getInputStream() : conn.getErrorStream();
+
+            StringBuilder sb = new StringBuilder();
+            if (in != null) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = br.readLine()) != null) sb.append(line);
+                }
+            }
+            return new ApiResult(code, sb.toString());
+        } catch (Exception e) {
+            return new ApiResult(-1, "{\"message\":\"Servicio no disponible\"}");
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+    }
+
+    // Peticion POST /modules/{module}/contents para agregar un contenido (text, video, link) a un modulo
+    public static ApiResult createContent(Context context, int moduleId, String title, String type, String bodyText, String urlString) {
+        HttpURLConnection conn = null;
+        try {
+            String token = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_TOKEN, "");
+            URL url = new URL(BASE_URL + "modules/" + moduleId + "/contents");
+
+            JSONObject payload = new JSONObject();
+            payload.put("title", title);
+            payload.put("type", type);
+            if ("text".equalsIgnoreCase(type)) {
+                payload.put("body", bodyText);
+            } else {
+                payload.put("url", urlString);
+            }
+
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setConnectTimeout(TIMEOUT_MS);
+            conn.setReadTimeout(TIMEOUT_MS);
+            conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+            conn.setRequestProperty("Accept", "application/json");
+            if (token != null && !token.isEmpty()) {
+                conn.setRequestProperty("Authorization", "Bearer " + token);
+            }
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(payload.toString().getBytes(StandardCharsets.UTF_8));
+            }
+
+            int code = conn.getResponseCode();
+            InputStream in = (code >= 200 && code < 300) ? conn.getInputStream() : conn.getErrorStream();
+
+            StringBuilder sb = new StringBuilder();
+            if (in != null) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = br.readLine()) != null) sb.append(line);
+                }
+            }
+            return new ApiResult(code, sb.toString());
+        } catch (Exception e) {
+            return new ApiResult(-1, "{\"message\":\"Servicio no disponible\"}");
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+    }
+
+    // Peticion PATCH /contents/{content} para editar un contenido existente
+    public static ApiResult editContent(Context context, int contentId, String title, String type, String bodyText, String urlString) {
+        HttpURLConnection conn = null;
+        try {
+            String token = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_TOKEN, "");
+            URL url = new URL(BASE_URL + "contents/" + contentId);
+
+            JSONObject payload = new JSONObject();
+            payload.put("title", title);
+            payload.put("type", type);
+            if ("text".equalsIgnoreCase(type)) {
+                payload.put("body", bodyText);
+            } else {
+                payload.put("url", urlString);
+            }
+
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("X-HTTP-Method-Override", "PATCH");
+            conn.setConnectTimeout(TIMEOUT_MS);
+            conn.setReadTimeout(TIMEOUT_MS);
+            conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+            conn.setRequestProperty("Accept", "application/json");
+            if (token != null && !token.isEmpty()) {
+                conn.setRequestProperty("Authorization", "Bearer " + token);
+            }
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(payload.toString().getBytes(StandardCharsets.UTF_8));
+            }
+
+            int code = conn.getResponseCode();
+            InputStream in = (code >= 200 && code < 300) ? conn.getInputStream() : conn.getErrorStream();
+
+            StringBuilder sb = new StringBuilder();
+            if (in != null) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = br.readLine()) != null) sb.append(line);
+                }
+            }
+            return new ApiResult(code, sb.toString());
+        } catch (Exception e) {
+            return new ApiResult(-1, "{\"message\":\"Servicio no disponible\"}");
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+    }
+
+    // Peticion DELETE /contents/{content} para borrar un contenido especifico
+    public static ApiResult deleteContent(Context context, int contentId) {
+        HttpURLConnection conn = null;
+        try {
+            String token = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_TOKEN, "");
+            URL url = new URL(BASE_URL + "contents/" + contentId);
+
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("DELETE");
+            conn.setConnectTimeout(TIMEOUT_MS);
+            conn.setReadTimeout(TIMEOUT_MS);
+            conn.setRequestProperty("Accept", "application/json");
+            if (token != null && !token.isEmpty()) {
+                conn.setRequestProperty("Authorization", "Bearer " + token);
             }
 
             int code = conn.getResponseCode();

@@ -10,6 +10,10 @@
             android:icon="@android:drawable/ic_menu_myplaces"
             android:title="Mi Perfil" />
         <item
+            android:id="@+id/nav_mis_cursos"
+            android:icon="@android:drawable/ic_menu_agenda"
+            android:title="Mis Cursos" />
+        <item
             android:id="@+id/nav_crear_curso"
             android:icon="@android:drawable/ic_menu_add"
             android:title="Crear Curso" />
