@@ -5,159 +5,381 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F8F9FA"
+    android:background="#F3F7FC"
     tools:context=".users.Profile">
 
+    <!-- Franja azul superior de la marca -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="61dp"
+        android:background="@color/brand_header"
+        android:elevation="3dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:letterSpacing="0.1"
+            android:text="C O U R S E R A   U D E M Y"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <!-- Barra de navegación -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarProfile"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/brand_header"
-        app:title="Perfil de Usuario"
-        app:titleTextColor="@color/white" />
+        android:layout_height="34dp"
+        android:background="@color/white"
+        app:elevation="2dp"
+        app:titleTextAppearance="@style/TextAppearance.AppCompat.Title"
+        app:titleTextColor="@color/brand_dark" />
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:clipToPadding="false">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp"
-            android:gravity="center_horizontal">
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:paddingTop="18dp"
+            android:paddingBottom="24dp">
 
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp">
-
-                <ImageView
-                    android:id="@+id/ivProfilePicture"
-                    android:layout_width="110dp"
-                    android:layout_height="110dp"
-                    android:scaleType="centerCrop"
-                    android:background="@drawable/bg_input"
-                    android:padding="4dp"
-                    android:src="@android:drawable/ic_menu_myplaces" />
-
-                <ImageView
-                    android:id="@+id/ivCameraBadge"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="bottom|end"
-                    android:background="@drawable/bg_input"
-                    android:padding="6dp"
-                    android:src="@android:drawable/ic_menu_camera"
-                    android:visibility="gone"
-                    app:tint="@color/brand_header" />
-            </FrameLayout>
-
-            <TextView
-                android:id="@+id/tvPhotoHint"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:text="Toca la foto para cambiar tu imagen de perfil"
-                android:textColor="#757575"
-                android:textSize="12sp"
-                android:visibility="gone" />
-
+            <!-- Tarjeta principal -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                app:cardUseCompatPadding="true"
-                app:cardBackgroundColor="@color/white">
+                app:cardBackgroundColor="@color/card_bg"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="6dp"
+                app:cardUseCompatPadding="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="20dp">
+                    android:gravity="center_horizontal"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:paddingTop="26dp"
+                    android:paddingBottom="20dp">
 
+                    <!-- Identidad visual de la plataforma -->
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Nombre"
+                        android:text="PLATAFORMA UDEMY"
+                        android:textAlignment="center"
                         android:textColor="@color/brand_dark"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.02" />
 
                     <TextView
-                        android:id="@+id/tvProfileName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="16dp"
-                        android:text="Cargando..."
-                        android:textColor="@color/black"
-                        android:textSize="16sp" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginBottom="16dp"
-                        android:background="#E0E0E0" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Correo Electrónico"
-                        android:textColor="@color/brand_dark"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvProfileEmail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="16dp"
-                        android:text="Cargando..."
-                        android:textColor="@color/black"
-                        android:textSize="16sp" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginBottom="16dp"
-                        android:background="#E0E0E0" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Rol de Usuario"
-                        android:textColor="@color/brand_dark"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvProfileRole"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Cargando..."
+                        android:layout_marginTop="5dp"
+                        android:text="SISTEMA DE CURSOS EN LÍNEA"
+                        android:textAlignment="center"
                         android:textColor="@color/brand_accent"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.10" />
+
+                    <!-- Separador decorativo -->
+                    <View
+                        android:layout_width="54dp"
+                        android:layout_height="4dp"
+                        android:layout_marginTop="17dp"
+                        android:layout_marginBottom="16dp"
+                        android:background="@color/brand_header" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mi perfil"
+                        android:textColor="@color/brand_dark"
                         android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:textStyle="normal" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+                        android:text="Consulta la información de tu cuenta"
+                        android:textColor="#7185A5"
+                        android:textSize="13sp" />
+
+                    <!-- Fotografía de perfil -->
+                    <FrameLayout
+                        android:layout_width="116dp"
+                        android:layout_height="116dp"
+                        android:layout_marginTop="22dp"
+                        android:layout_marginBottom="10dp">
+
+                        <ImageView
+                            android:id="@+id/ivProfilePicture"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="3dp"
+                            android:background="@drawable/bg_input"
+                            android:padding="12dp"
+                            android:scaleType="centerCrop"
+                            android:src="@android:drawable/ic_menu_myplaces"
+                            android:contentDescription="Foto de perfil" />
+
+                        <ImageView
+                            android:id="@+id/ivCameraBadge"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:layout_gravity="bottom|end"
+                            android:background="@drawable/bg_input"
+                            android:padding="7dp"
+                            android:src="@android:drawable/ic_menu_camera"
+                            android:visibility="gone"
+                            android:contentDescription="Cambiar fotografía"
+                            app:tint="@color/brand_header" />
+
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/tvPhotoHint"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:gravity="center"
+                        android:text="Toca la foto para cambiar tu imagen de perfil"
+                        android:textColor="#7185A5"
+                        android:textSize="12sp"
+                        android:visibility="gone" />
+
+                    <!-- Información de la cuenta -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginTop="22dp"
+                        android:padding="16dp"
+                        android:background="@drawable/bg_input">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="INFORMACIÓN DE LA CUENTA"
+                            android:textColor="@color/brand_dark"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.07"
+                            android:layout_marginBottom="8dp" />
+
+                        <!-- Nombre -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingTop="12dp"
+                            android:paddingBottom="12dp">
+
+                            <ImageView
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:layout_marginEnd="14dp"
+                                android:src="@android:drawable/ic_menu_myplaces"
+                                android:contentDescription="Nombre"
+                                app:tint="@color/brand_header" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="NOMBRE"
+                                    android:textColor="@color/label_text"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold"
+                                    android:letterSpacing="0.06" />
+
+                                <TextView
+                                    android:id="@+id/tvProfileName"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="Cargando..."
+                                    android:textColor="@color/brand_dark"
+                                    android:textSize="15sp" />
+
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="#DDE7F4" />
+
+                        <!-- Correo electrónico -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingTop="15dp"
+                            android:paddingBottom="15dp">
+
+                            <ImageView
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:layout_marginEnd="14dp"
+                                android:src="@android:drawable/ic_dialog_email"
+                                android:contentDescription="Correo electrónico"
+                                app:tint="@color/brand_header" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="CORREO ELECTRÓNICO"
+                                    android:textColor="@color/label_text"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold"
+                                    android:letterSpacing="0.04" />
+
+                                <TextView
+                                    android:id="@+id/tvProfileEmail"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="Cargando..."
+                                    android:textColor="@color/brand_dark"
+                                    android:textSize="15sp" />
+
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="#DDE7F4" />
+
+                        <!-- Rol -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingTop="15dp"
+                            android:paddingBottom="10dp">
+
+                            <ImageView
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:layout_marginEnd="14dp"
+                                android:src="@android:drawable/ic_menu_info_details"
+                                android:contentDescription="Rol de usuario"
+                                app:tint="@color/brand_accent" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="ROL DE USUARIO"
+                                    android:textColor="@color/label_text"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold"
+                                    android:letterSpacing="0.06" />
+
+                                <TextView
+                                    android:id="@+id/tvProfileRole"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="Cargando..."
+                                    android:textColor="@color/brand_accent"
+                                    android:textSize="15sp"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <!-- Acción para estudiantes -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnBecomeInstructor"
+                        android:layout_width="match_parent"
+                        android:layout_height="54dp"
+                        android:layout_marginTop="22dp"
+                        android:text="Volverse Instructor"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:backgroundTint="@color/brand_header"
+                        android:visibility="gone"
+                        app:cornerRadius="12dp"
+                        app:elevation="3dp"
+                        app:icon="@android:drawable/ic_menu_upload"
+                        app:iconGravity="textStart"
+                        app:iconTint="@color/white" />
+
+                    <!-- Pie de tarjeta -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="25dp"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="28dp"
+                            android:layout_height="1dp"
+                            android:background="#BDD7FA" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="10dp"
+                            android:text="TU ESPACIO DE APRENDIZAJE"
+                            android:textColor="#7185A5"
+                            android:textSize="9sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.08" />
+
+                        <View
+                            android:layout_width="28dp"
+                            android:layout_height="1dp"
+                            android:background="#BDD7FA" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <Button
-                android:id="@+id/btnBecomeInstructor"
-                android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:layout_marginTop="20dp"
-                android:text="Volverse Instructor"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:backgroundTint="@color/brand_header"
-                android:visibility="gone" />
-
         </LinearLayout>
     </ScrollView>
+
 </LinearLayout>
