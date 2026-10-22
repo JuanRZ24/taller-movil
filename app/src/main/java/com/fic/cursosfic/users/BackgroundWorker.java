@@ -250,6 +250,70 @@ public class BackgroundWorker extends AsyncTask<String, Void, BackgroundWorker.A
         }
     }
 
+    // Peticion GET /courses para el catalogo publico, solo cursos publicados
+    public static ApiResult getCatalog(Context context) {
+        HttpURLConnection conn = null;
+        try {
+            URL url = new URL(BASE_URL + "courses");
+
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(TIMEOUT_MS);
+            conn.setReadTimeout(TIMEOUT_MS);
+            conn.setRequestProperty("Accept", "application/json");
+
+            int code = conn.getResponseCode();
+            InputStream in = (code >= 200 && code < 300) ? conn.getInputStream() : conn.getErrorStream();
+
+            StringBuilder sb = new StringBuilder();
+            if (in != null) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = br.readLine()) != null) sb.append(line);
+                }
+            }
+            return new ApiResult(code, sb.toString());
+        } catch (Exception e) {
+            return new ApiResult(-1, "{\"message\":\"Servicio no disponible\"}");
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+    }
+
+    // Peticion GET /courses/{id} para obtener el curso completo con sus modulos y contenidos
+    public static ApiResult getCourseDetail(Context context, int courseId) {
+        HttpURLConnection conn = null;
+        try {
+            String token = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_TOKEN, "");
+            URL url = new URL(BASE_URL + "courses/" + courseId);
+
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(TIMEOUT_MS);
+            conn.setReadTimeout(TIMEOUT_MS);
+            conn.setRequestProperty("Accept", "application/json");
+            if (token != null && !token.isEmpty()) {
+                conn.setRequestProperty("Authorization", "Bearer " + token);
+            }
+
+            int code = conn.getResponseCode();
+            InputStream in = (code >= 200 && code < 300) ? conn.getInputStream() : conn.getErrorStream();
+
+            StringBuilder sb = new StringBuilder();
+            if (in != null) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = br.readLine()) != null) sb.append(line);
+                }
+            }
+            return new ApiResult(code, sb.toString());
+        } catch (Exception e) {
+            return new ApiResult(-1, "{\"message\":\"Servicio no disponible\"}");
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+    }
+
     // Peticion POST para crear y publicar un curso nuevo
     public static ApiResult createCourse(Context context, String title, String description, int categoryId, String level) {
         HttpURLConnection conn = null;

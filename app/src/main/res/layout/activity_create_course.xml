@@ -116,11 +116,11 @@
                         android:paddingHorizontal="8dp" />
 
                     <Button
-                        android:id="@+id/btnPublishCourse"
+                        android:id="@+id/btnCreateCourse"
                         android:layout_width="match_parent"
                         android:layout_height="52dp"
                         android:backgroundTint="@color/brand_header"
-                        android:text="Publicar Curso"
+                        android:text="Crear curso"
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         android:textStyle="bold" />

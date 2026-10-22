@@ -13,7 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
-        android:theme="@style/Theme.CursosFic">
+        android:theme="@style/Theme.CourseraUdemy">
         <activity
             android:name=".users.Login"
             android:exported="true"

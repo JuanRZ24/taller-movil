@@ -6,41 +6,182 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".menu.menu"
     tools:openDrawer="start">
 
-    <!-- Vista Principal de Contenido -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@color/white">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/brand_header"
-            app:title="Cursos FIC"
+            android:elevation="4dp"
+            app:title="C O U R S E R A   U D E M Y"
             app:titleTextColor="@color/white" />
 
-        <TextView
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="¡Bienvenido a Cursos FIC!"
-            android:textColor="@color/label_text"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <!-- BIENVENIDA -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="BIENVENIDO A"
+                    android:textColor="@color/brand_accent"
+                    android:textSize="12sp"
+                    android:letterSpacing="0.15"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="Coursera Udemy"
+                    android:textColor="@color/brand_dark"
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="20dp"
+                    android:text="Tu próximo aprendizaje comienza aquí."
+                    android:textColor="@color/label_text"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="@color/card_bg"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="5dp"
+                    app:strokeColor="@color/brand_header"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="22dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="¡Qué bueno tenerte aquí!"
+                            android:textColor="@color/brand_dark"
+                            android:textSize="19sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:gravity="center"
+                            android:lineSpacingExtra="4dp"
+                            android:text="Explora nuevas oportunidades, adquiere conocimientos y desarrolla habilidades a tu propio ritmo."
+                            android:textColor="@color/label_text"
+                            android:textSize="14sp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:background="@color/white"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:padding="14dp">
+
+                            <View
+                                android:layout_width="4dp"
+                                android:layout_height="36dp"
+                                android:background="@color/brand_header" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:layout_weight="1"
+                                android:text="APRENDE. CRECE. SUPÉRATE."
+                                android:textColor="@color/brand_dark"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- CATALOGO DE CURSOS -->
+                <View
+                    android:layout_width="54dp"
+                    android:layout_height="3dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="18dp"
+                    android:background="@color/brand_header" />
+
+                <TextView
+                    android:id="@+id/catalogTitleTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="3dp"
+                    android:text="Catálogo de cursos"
+                    android:textColor="@color/brand_dark"
+                    android:textSize="21sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/catalogSubtitleTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="16dp"
+                    android:text="Cargando cursos..."
+                    android:textColor="@color/label_text"
+                    android:textSize="14sp" />
+
+                <LinearLayout
+                    android:id="@+id/catalogContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:gravity="center"
+                    android:text="TU ESPACIO DE APRENDIZAJE"
+                    android:textColor="@color/label_text"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.1" />
+            </LinearLayout>
+        </ScrollView>
     </LinearLayout>
 
-    <!-- Menú Lateral NAVEGACIÓN -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start|fill_vertical"
-        android:background="@color/black_carmesi"
-        app:itemIconTint="@color/drawer_item"
+        android:background="@color/brand_header"
+        app:itemIconTint="@color/white"
         app:itemTextColor="@color/white"
         app:menu="@menu/main_menu" />
+
 </androidx.drawerlayout.widget.DrawerLayout>

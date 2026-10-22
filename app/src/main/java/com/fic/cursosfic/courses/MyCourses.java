@@ -21,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
 
@@ -107,6 +108,15 @@ public class MyCourses extends AppCompatActivity {
 
         emptyCoursesTextView.setVisibility(View.GONE);
 
+        Collections.sort(courseJsonList, (a, b) -> {
+            int ordenA = ordenDeEstado(a.optString("status", "draft"));
+            int ordenB = ordenDeEstado(b.optString("status", "draft"));
+            if (ordenA != ordenB) return ordenA - ordenB;
+            return a.optString("title", "").compareToIgnoreCase(b.optString("title", ""));
+        });
+
+        String grupoAnterior = "";
+
         for (int i = 0; i < courseJsonList.size(); i++) {
             final JSONObject courseObj = courseJsonList.get(i);
 
@@ -114,6 +124,20 @@ public class MyCourses extends AppCompatActivity {
             String description = courseObj.optString("description", "Sin descripción");
             String level = courseObj.optString("level", "beginner");
             String status = courseObj.optString("status", "draft");
+
+            String grupo = nombreDeGrupo(status);
+            if (!grupo.equals(grupoAnterior)) {
+                grupoAnterior = grupo;
+                TextView encabezado = new TextView(this);
+                encabezado.setText(grupo);
+                encabezado.setTextSize(13f);
+                encabezado.setTextColor(Color.parseColor("#6B7280"));
+                encabezado.setTypeface(null, android.graphics.Typeface.BOLD);
+                encabezado.setAllCaps(true);
+                encabezado.setLetterSpacing(0.06f);
+                encabezado.setPadding(8, i == 0 ? 0 : 20, 0, 12);
+                coursesContainer.addView(encabezado);
+            }
 
             JSONObject catObj = courseObj.optJSONObject("category");
             String categoryName = (catObj != null) ? catObj.optString("name", "General") : "General";
@@ -165,7 +189,7 @@ public class MyCourses extends AppCompatActivity {
             layout.addView(tvStatus);
 
             TextView tvMeta = new TextView(this);
-            tvMeta.setText("Categoría: " + categoryName + "  |  Nivel: " + level);
+            tvMeta.setText(categoryName + "  ·  " + nombreDeNivel(level));
             tvMeta.setTextSize(13f);
             tvMeta.setTextColor(Color.GRAY);
             tvMeta.setPadding(0, 0, 0, 8);
@@ -175,15 +199,20 @@ public class MyCourses extends AppCompatActivity {
             tvDesc.setText(description);
             tvDesc.setTextSize(14f);
             tvDesc.setTextColor(Color.DKGRAY);
+            tvDesc.setMaxLines(3);
+            tvDesc.setEllipsize(android.text.TextUtils.TruncateAt.END);
             tvDesc.setPadding(0, 0, 0, 16);
             layout.addView(tvDesc);
 
+            boolean editable = "draft".equalsIgnoreCase(status) || "rejected".equalsIgnoreCase(status);
+
             Button btnManage = new Button(this);
-            btnManage.setText("Gestionar Módulos y Contenidos");
+            btnManage.setText(editable ? "Gestionar módulos y contenidos" : "Ver módulos y contenidos");
             btnManage.setTextColor(Color.WHITE);
             btnManage.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.brand_header));
             btnManage.setOnClickListener(v -> {
                 Intent intent = new Intent(MyCourses.this, CourseDetail.class);
+                intent.putExtra("course_id", courseObj.optInt("id"));
                 intent.putExtra("course_json", courseObj.toString());
                 startActivity(intent);
             });
@@ -192,5 +221,27 @@ public class MyCourses extends AppCompatActivity {
             card.addView(layout);
             coursesContainer.addView(card);
         }
+    }
+
+    // Los cursos que todavia se pueden trabajar van primero
+    private int ordenDeEstado(String status) {
+        if ("draft".equalsIgnoreCase(status)) return 0;
+        if ("rejected".equalsIgnoreCase(status)) return 1;
+        if ("pending".equalsIgnoreCase(status) || "review".equalsIgnoreCase(status)) return 2;
+        return 3;
+    }
+
+    private String nombreDeGrupo(String status) {
+        if ("draft".equalsIgnoreCase(status)) return "Borradores";
+        if ("rejected".equalsIgnoreCase(status)) return "Rechazados";
+        if ("pending".equalsIgnoreCase(status) || "review".equalsIgnoreCase(status)) return "En revisión";
+        return "Publicados";
+    }
+
+    private String nombreDeNivel(String level) {
+        if ("beginner".equalsIgnoreCase(level)) return "Principiante";
+        if ("intermediate".equalsIgnoreCase(level)) return "Intermedio";
+        if ("advanced".equalsIgnoreCase(level)) return "Avanzado";
+        return level;
     }
 }

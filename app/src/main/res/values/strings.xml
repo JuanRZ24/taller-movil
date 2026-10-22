@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CursosFic</string>
+    <string name="app_name">Coursera Udemy</string>
     <string name="btmlogin">Iniciar Sesión </string>
     <string name="txtemail">Correo electrónico</string>
     <string name="txtpassword">Contraseña</string>
@@ -8,7 +8,7 @@
     <string name="btmregister2">Registrarse</string>
     <string name="txtname">Nombre(s)</string>
     <string name="txtlastname">Apellidos</string>
-    <string name="footer_copyright">© 2024 CursosFic - Todos los derechos reservados</string>
+    <string name="footer_copyright">© 2026 Coursera Udemy - Todos los derechos reservados</string>
     <string name="navigation_drawer_open">Abrir menú</string>
     <string name="navigation_drawer_close">Cerrar menú</string>
 </resources>

@@ -36,6 +36,7 @@ public class CourseDetail extends AppCompatActivity {
 
     private TextView courseTitleTextView, courseMetaTextView, courseDescriptionTextView, emptyModulesTextView;
     private Button addModuleButton, publishCourseButton;
+    private boolean soloLectura = false;
     private LinearLayout modulesContainer;
 
     private final List<ModuleItem> modulesList = new ArrayList<>();
@@ -80,46 +81,66 @@ public class CourseDetail extends AppCompatActivity {
         modulesContainer = findViewById(R.id.modulesContainer);
 
         extractIntentData();
+        aplicarModoLectura();
         displayCourseHeader();
 
         addModuleButton.setOnClickListener(v -> showAddModuleDialog());
-        publishCourseButton.setOnClickListener(v -> {
-            new AlertDialog.Builder(this)
-                    .setTitle("Publicar Curso")
-                    .setMessage("Estado actual: " + courseStatus.toUpperCase() + "\n\n¿Deseas enviar este curso a revisión para su publicación?")
-                    .setPositiveButton("Sí, enviar a revisión", (dialog, which) -> {
-                        Toast.makeText(this, "Enviando curso a revisión...", Toast.LENGTH_SHORT).show();
-                        Executors.newSingleThreadExecutor().execute(() -> {
-                            BackgroundWorker.ApiResult result = BackgroundWorker.publishCourse(CourseDetail.this, courseId);
-                            runOnUiThread(() -> {
-                                if (result.isSuccess()) {
-                                    Toast.makeText(CourseDetail.this, "¡Curso enviado a revisión con éxito!", Toast.LENGTH_LONG).show();
-                                } else {
-                                    Toast.makeText(CourseDetail.this, "Curso enviado a revisión", Toast.LENGTH_SHORT).show();
-                                }
-                                Intent intent = new Intent(CourseDetail.this, com.fic.cursosfic.menu.menu.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                                startActivity(intent);
-                                finish();
-                            });
-                        });
-                    })
-                    .setNegativeButton("Cancelar", (dialog, which) -> dialog.dismiss())
-                    .show();
-        });
+        publishCourseButton.setVisibility(View.GONE);
 
         renderModules();
+        loadCourseFromApi();
     }
 
     // Extrae el JSON del curso recién creado enviado desde la pantalla anterior
     private void extractIntentData() {
+        if (getIntent() != null && getIntent().hasExtra("course_id")) {
+            courseId = getIntent().getIntExtra("course_id", 0);
+        }
+
         if (getIntent() != null && getIntent().hasExtra("course_json")) {
+            parseCourse(getIntent().getStringExtra("course_json"));
+        }
+    }
+
+    // Pide el curso completo a la API, porque el listado no incluye modulos ni contenidos
+    private void loadCourseFromApi() {
+        if (courseId <= 0) return;
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            BackgroundWorker.ApiResult result = BackgroundWorker.getCourseDetail(CourseDetail.this, courseId);
+            runOnUiThread(() -> {
+                if (!result.isSuccess()) return;
+                modulesList.clear();
+                parseCourse(result.body);
+                aplicarModoLectura();
+                displayCourseHeader();
+                renderModules();
+            });
+        });
+    }
+
+    // Un curso en revision o publicado no se puede modificar, asi que la pantalla queda de consulta
+    private void aplicarModoLectura() {
+        soloLectura = !("draft".equalsIgnoreCase(courseStatus) || "rejected".equalsIgnoreCase(courseStatus));
+        addModuleButton.setVisibility(soloLectura ? View.GONE : View.VISIBLE);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(soloLectura ? "Temario del curso" : "Gestión del Curso");
+        }
+        if (soloLectura && emptyModulesTextView != null) {
+            emptyModulesTextView.setText("Este curso todavía no tiene temario.");
+        }
+    }
+
+    // Lee el curso, sus modulos y sus contenidos de una respuesta de la API
+    private void parseCourse(String body) {
+        if (body == null || body.isEmpty()) return;
+        {
             try {
-                JSONObject json = new JSONObject(getIntent().getStringExtra("course_json"));
+                JSONObject json = new JSONObject(body);
                 JSONObject courseObj = json.optJSONObject("course");
                 if (courseObj == null) courseObj = json;
 
-                courseId = courseObj.optInt("id", 0);
+                courseId = courseObj.optInt("id", courseId);
                 courseTitle = courseObj.optString("title", "Curso sin título");
                 courseDescription = courseObj.optString("description", "Sin descripción");
                 courseLevel = courseObj.optString("level", "beginner");
@@ -176,8 +197,23 @@ public class CourseDetail extends AppCompatActivity {
     // Muestra el titulo, categoria, nivel y descripcion del curso en el encabezado
     private void displayCourseHeader() {
         courseTitleTextView.setText(courseTitle);
-        courseMetaTextView.setText("Categoría: " + categoryName + "  |  Nivel: " + courseLevel + "  |  Estado: " + courseStatus);
+        courseMetaTextView.setText(categoryName + "  ·  " + nombreDeNivel(courseLevel) + "  ·  " + nombreDeEstado(courseStatus));
         courseDescriptionTextView.setText(courseDescription);
+    }
+
+    private String nombreDeNivel(String level) {
+        if ("beginner".equalsIgnoreCase(level)) return "Principiante";
+        if ("intermediate".equalsIgnoreCase(level)) return "Intermedio";
+        if ("advanced".equalsIgnoreCase(level)) return "Avanzado";
+        return level;
+    }
+
+    private String nombreDeEstado(String status) {
+        if ("draft".equalsIgnoreCase(status)) return "Borrador";
+        if ("pending".equalsIgnoreCase(status)) return "En revisión";
+        if ("published".equalsIgnoreCase(status)) return "Publicado";
+        if ("rejected".equalsIgnoreCase(status)) return "Rechazado";
+        return status;
     }
 
     // Renderiza la lista dinamica de modulos y sus contenidos en el contenedor vertical
@@ -226,7 +262,7 @@ public class CourseDetail extends AppCompatActivity {
             tvEditMod.setText(" ✏️ ");
             tvEditMod.setTextSize(16f);
             tvEditMod.setOnClickListener(v -> showEditModuleDialog(module));
-            headerLayout.addView(tvEditMod);
+            if (!soloLectura) headerLayout.addView(tvEditMod);
 
             // Boton para agregar contenido
             Button btnAddContent = new Button(this);
@@ -235,7 +271,7 @@ public class CourseDetail extends AppCompatActivity {
             btnAddContent.setTextColor(Color.WHITE);
             btnAddContent.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.brand_header));
             btnAddContent.setOnClickListener(v -> showAddContentDialog(module));
-            headerLayout.addView(btnAddContent);
+            if (!soloLectura) headerLayout.addView(btnAddContent);
 
             // Boton para borrar modulo
             Button btnDelMod = new Button(this);
@@ -244,7 +280,7 @@ public class CourseDetail extends AppCompatActivity {
             btnDelMod.setTextColor(Color.WHITE);
             btnDelMod.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.error_red));
             btnDelMod.setOnClickListener(v -> confirmDeleteModule(module));
-            headerLayout.addView(btnDelMod);
+            if (!soloLectura) headerLayout.addView(btnDelMod);
 
             moduleLayout.addView(headerLayout);
 
@@ -285,13 +321,13 @@ public class CourseDetail extends AppCompatActivity {
                     tvEditCnt.setText(" ✏️ ");
                     tvEditCnt.setTextSize(16f);
                     tvEditCnt.setOnClickListener(v -> showEditContentDialog(module, content));
-                    cntRow.addView(tvEditCnt);
+                    if (!soloLectura) cntRow.addView(tvEditCnt);
 
                     TextView tvDelCnt = new TextView(this);
                     tvDelCnt.setText(" 🗑️ ");
                     tvDelCnt.setTextSize(16f);
                     tvDelCnt.setOnClickListener(v -> confirmDeleteContent(module, content));
-                    cntRow.addView(tvDelCnt);
+                    if (!soloLectura) cntRow.addView(tvDelCnt);
 
                     moduleLayout.addView(cntRow);
                 }

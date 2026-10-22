@@ -26,7 +26,7 @@ public class CreateCourse extends AppCompatActivity {
 
     private EditText etCourseTitle, etCourseDescription;
     private Spinner spinnerCategory, spinnerLevel;
-    private Button btnPublishCourse;
+    private Button btnCreateCourse;
 
     private final List<String> categoryDisplayList = new ArrayList<>();
     private final List<Integer> categoryIdList = new ArrayList<>();
@@ -59,12 +59,12 @@ public class CreateCourse extends AppCompatActivity {
         etCourseDescription = findViewById(R.id.etCourseDescription);
         spinnerCategory = findViewById(R.id.spinnerCategory);
         spinnerLevel = findViewById(R.id.spinnerLevel);
-        btnPublishCourse = findViewById(R.id.btnPublishCourse);
+        btnCreateCourse = findViewById(R.id.btnCreateCourse);
 
         setupLevelSpinner();
         loadCategoriesFromApi();
 
-        btnPublishCourse.setOnClickListener(v -> publishCourse());
+        btnCreateCourse.setOnClickListener(v -> createCourse());
     }
 
     // Configura el menu desplegable para elegir el nivel de dificultad del curso
@@ -123,8 +123,8 @@ public class CreateCourse extends AppCompatActivity {
         });
     }
 
-    // Valida el formulario y manda la peticion POST /courses al servidor para publicar el curso
-    private void publishCourse() {
+    // Valida el formulario y manda la peticion POST /courses para crear el curso como borrador
+    private void createCourse() {
         String title = etCourseTitle.getText().toString().trim();
         String description = etCourseDescription.getText().toString().trim();
 
@@ -151,7 +151,7 @@ public class CreateCourse extends AppCompatActivity {
         int levelPos = spinnerLevel.getSelectedItemPosition();
         String level = (levelPos >= 0 && levelPos < levelValues.length) ? levelValues[levelPos] : "beginner";
 
-        btnPublishCourse.setEnabled(false);
+        btnCreateCourse.setEnabled(false);
         Toast.makeText(this, "Publicando curso en el servidor...", Toast.LENGTH_SHORT).show();
 
         Executors.newSingleThreadExecutor().execute(() -> {
@@ -160,7 +160,7 @@ public class CreateCourse extends AppCompatActivity {
             );
 
             runOnUiThread(() -> {
-                btnPublishCourse.setEnabled(true);
+                btnCreateCourse.setEnabled(true);
                 if (result.isSuccess()) {
                     Toast.makeText(CreateCourse.this, "¡Curso creado con éxito!", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(CreateCourse.this, CourseDetail.class);
@@ -170,7 +170,7 @@ public class CreateCourse extends AppCompatActivity {
                 } else {
                     String detailMsg = "Código HTTP " + result.code + "\n" + BackgroundWorker.humanMessage(result.body);
                     new AlertDialog.Builder(CreateCourse.this)
-                            .setTitle("Error al publicar el curso")
+                            .setTitle("Error al crear el curso")
                             .setMessage(detailMsg)
                             .setPositiveButton("Entendido", (dialog, which) -> dialog.dismiss())
                             .show();
